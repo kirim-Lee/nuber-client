@@ -35,7 +35,9 @@ const client = new ApolloClient({
     },
     request: async(operation: Operation) => {
         operation.setContext({
-            'X-JWT': localStorage.getItem('jwt') || ''
+            headers: {
+                'X-JWT': localStorage.getItem('jwt') || ''
+            }
         })
     },
     uri: "http://localhost:4000/graphql"
