@@ -5,6 +5,14 @@ Client for the (N)Uber Clone Course on Nomad Academy. ReactJS, Apollo, Typescrip
 - styled-reset
 - styled-components
 
+## utils
+- react-toastify : 알림창 
+
+## tips
+- as any
+- // tslint:disabled-next-line
+
+
 ## router
 - react-router-dom
 - react-router
