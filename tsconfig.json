@@ -19,7 +19,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "esModuleInterop": true, // modify
-    "skipLibCheck": true // modify
+    "skipLibCheck": true, // modify
   },
   "exclude": [
     "node_modules",
