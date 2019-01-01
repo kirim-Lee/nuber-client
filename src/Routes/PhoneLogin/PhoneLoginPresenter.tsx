@@ -58,12 +58,14 @@ interface IProps {
   phoneNumber: string;
   onInputChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleSubmit: (event: React.FormEvent<HTMLFormElement | HTMLButtonElement>) => void;
+  loading: any
 }
 
 const PhoneLoginPresenter: React.SFC<IProps> = ({
   countryCode, phoneNumber,
   onInputChange,
-  handleSubmit
+  handleSubmit,
+  loading
 }) => (
     <Container>
         <Helmet>
