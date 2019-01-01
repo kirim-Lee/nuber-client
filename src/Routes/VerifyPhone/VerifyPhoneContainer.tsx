@@ -1,5 +1,5 @@
 import React from 'react';
-import { graphql, Mutation, MutationFn } from 'react-apollo';
+import { Mutation, MutationFn } from 'react-apollo';
 import { RouteComponentProps } from 'react-router';
 import { toast } from 'react-toastify';
 import { USER_LOG_IN } from 'src/shared.queries';
@@ -11,11 +11,10 @@ interface IState {
     verifyKey: string;
     phoneNumber: string;
 }
-interface IProps extends RouteComponentProps<any> {
-    userLogIn: MutationFn
-}
+interface IProps extends RouteComponentProps<any> {}
 
-class VerifyMutation extends Mutation<verifyPhone, verifyPhoneVariables> {}
+class VerifyMutation extends Mutation<verifyPhone, verifyPhoneVariables> {
+}
 
 class VerifyPhoneContainer extends React.Component<IProps, IState> {
     
@@ -33,22 +32,27 @@ class VerifyPhoneContainer extends React.Component<IProps, IState> {
     public render() {
         const { verifyKey, phoneNumber } = this.state;
         return (
-            <VerifyMutation 
-                mutation = { VERIFY_PHONE } 
-                variables = {{key: verifyKey, phoneNumber }}
-                update = {this.afterCompleted}
-            >
-            {(mutation, {loading}) => {
-                return (
-                    <VerifyPhonePresenter 
-                        onChange = {this.onInputChange}
-                        onSubmit = {mutation}
-                        verifyKey = {verifyKey}
-                        loading = {loading}
-                    />
-                )
-            }}
-            </VerifyMutation>
+            <Mutation mutation = {USER_LOG_IN}>
+                {userLogin => (
+                    <VerifyMutation 
+                        mutation = { VERIFY_PHONE } 
+                        variables = {{key: verifyKey, phoneNumber }}
+                        update = {(cache, data: any)=>{ this.afterCompleted(cache, data, userLogin)}}
+                    >
+                    {(mutation, {loading}) => {
+                        return (
+                            <VerifyPhonePresenter 
+                                onChange = {this.onInputChange}
+                                onSubmit = {mutation}
+                                verifyKey = {verifyKey}
+                                loading = {loading}
+                            />
+                        )
+                    }}
+                    </VerifyMutation>
+                )}
+            </Mutation>
+            
         );
     }
     
@@ -62,10 +66,11 @@ class VerifyPhoneContainer extends React.Component<IProps, IState> {
     public afterCompleted = (
         cache,
         {data : { CompletePhoneVerification }} :
-        {data: verifyPhone }
+        {data: verifyPhone },
+        userLogIn: MutationFn
     ) => {
         if (CompletePhoneVerification.ok) {
-            this.props.userLogIn({
+            userLogIn({
                 variables: {
                     token: CompletePhoneVerification.token
                 }
@@ -77,6 +82,4 @@ class VerifyPhoneContainer extends React.Component<IProps, IState> {
     }
 }
 
-export default graphql<IProps, any>(USER_LOG_IN,{
-    name: "userLogIn"
-})(VerifyPhoneContainer);
+export default VerifyPhoneContainer;
