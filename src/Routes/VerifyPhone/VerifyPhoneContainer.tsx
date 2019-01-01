@@ -1,7 +1,8 @@
 import React from 'react';
-import { Mutation } from 'react-apollo';
+import { graphql, Mutation, MutationFn } from 'react-apollo';
 import { RouteComponentProps } from 'react-router';
 import { toast } from 'react-toastify';
+import { USER_LOG_IN } from 'src/shared.queries';
 import { verifyPhone, verifyPhoneVariables } from 'src/types/api';
 import { VERIFY_PHONE } from './VerifyPhone.queries';
 import VerifyPhonePresenter from './VerifyPhonePresenter';
@@ -10,7 +11,9 @@ interface IState {
     verifyKey: string;
     phoneNumber: string;
 }
-interface IProps extends RouteComponentProps<any> {}
+interface IProps extends RouteComponentProps<any> {
+    userLogIn: MutationFn
+}
 
 class VerifyMutation extends Mutation<verifyPhone, verifyPhoneVariables> {}
 
@@ -38,11 +41,12 @@ class VerifyPhoneContainer extends React.Component<IProps, IState> {
             {(mutation, {loading}) => {
                 return (
                     <VerifyPhonePresenter 
-                    onChange = {this.onInputChange}
-                    onSubmit = {mutation}
-                    verifyKey = {verifyKey}
-                    loading = {loading}
-                />)
+                        onChange = {this.onInputChange}
+                        onSubmit = {mutation}
+                        verifyKey = {verifyKey}
+                        loading = {loading}
+                    />
+                )
             }}
             </VerifyMutation>
         );
@@ -61,6 +65,11 @@ class VerifyPhoneContainer extends React.Component<IProps, IState> {
         {data: verifyPhone }
     ) => {
         if (CompletePhoneVerification.ok) {
+            this.props.userLogIn({
+                variables: {
+                    token: CompletePhoneVerification.token
+                }
+            });
             toast.success('verified success!');
         } else {
             toast.error(CompletePhoneVerification.error);
@@ -68,4 +77,6 @@ class VerifyPhoneContainer extends React.Component<IProps, IState> {
     }
 }
 
-export default VerifyPhoneContainer;
+export default graphql<IProps, any>(USER_LOG_IN,{
+    name: "userLogIn"
+})(VerifyPhoneContainer);
