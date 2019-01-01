@@ -70,7 +70,6 @@ class PhoneLoginContainer extends React.Component<
         this.setState({
             [name]: value
         } as any)
-
     }
 
     public afterSubmit: MutationUpdaterFn = (
