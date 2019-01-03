@@ -43,9 +43,9 @@ const SocialLoginPresenter: React.SFC<IProps> = ({loginCallBack}) => (
     <BackArrowExtended backTo={"/"} />
     <FacebookLogin
       appId="2105810676308253"
-      autoLoad={true}
-      fields="name,email,picture"
+      fields="name,last_name, first_name, email"
       callback = {loginCallBack}
+      autoLoad = {false}
       render = { renderProps => (
         <Link onClick={renderProps.onClick}>
           <Icon>
