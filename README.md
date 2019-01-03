@@ -26,10 +26,10 @@ Client for the (N)Uber Clone Course on Nomad Academy. ReactJS, Apollo, Typescrip
 - @types/react-router
 
 ## Screens
-- [ ] Home
-- [ ] 휴대폰 로그인
-- [ ] 휴대폰 인증( 휴대폰 로그인 완료 )
-- [ ] 소셜 로그인
+- [x] Home
+- [x] 휴대폰 로그인
+- [x] 휴대폰 인증( 휴대폰 로그인 완료 )
+- [x] 소셜 로그인
 
 ## Logged In:
 - [ ] Home
