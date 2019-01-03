@@ -14,12 +14,21 @@ interface IState {
     fbId: string;
 }
 
-interface IProps extends RouteComponentProps<any> {}
+interface IProps extends RouteComponentProps<any> {
+}
 
 class SocialLoginContainer extends React.Component<IProps, IState> {
     public render() {
-        return <LoginMutation mutation={FACEBOOK_CONNECT}>
-            {facebookLogin => <SocialLoginPresenter />}
+        const { firstName, lastName, email, fbId} = this.state;
+        return <LoginMutation 
+            mutation={FACEBOOK_CONNECT}
+            variables = {{firstName, lastName, email, fbId }}
+            >
+            {(facebookConnect, {loading}) => (
+                <SocialLoginPresenter 
+                    loginCallBack={facebookConnect}
+                />
+            )}
         </LoginMutation>
     }
 }
