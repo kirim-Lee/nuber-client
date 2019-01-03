@@ -31,7 +31,8 @@ const BackArrowExtended = styled(BackArrow)`
 `;
 
 interface IProps {
-  loginCallBack: MutationFn
+  loginCallBack: MutationFn;
+  loading: boolean;
 }
 
 const SocialLoginPresenter: React.SFC<IProps> = ({loginCallBack}) => (
@@ -46,7 +47,8 @@ const SocialLoginPresenter: React.SFC<IProps> = ({loginCallBack}) => (
       fields="name,last_name, first_name, email"
       callback = {loginCallBack}
       autoLoad = {false}
-      render = { renderProps => (
+      render = { renderProps => { 
+        return(
         <Link onClick={renderProps.onClick}>
           <Icon>
             <svg
@@ -61,7 +63,7 @@ const SocialLoginPresenter: React.SFC<IProps> = ({loginCallBack}) => (
           </Icon>
           Facebook
         </Link>
-      )}
+      )}}
     />
     
   </Container>
