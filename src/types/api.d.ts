@@ -2,6 +2,30 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: updateProfile
+// ====================================================
+
+export interface updateProfile_UpdateMyProfile {
+  __typename: "UpdateMyProfileResponse";
+  ok: boolean;
+  error: string | null;
+}
+
+export interface updateProfile {
+  UpdateMyProfile: updateProfile_UpdateMyProfile;
+}
+
+export interface updateProfileVariables {
+  firstName: string;
+  lastName: string;
+  email: string;
+  profilePhoto?: string | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: toggleDriving
 // ====================================================
 
@@ -96,6 +120,9 @@ export interface userProfile_GetMyProfile_user {
   profilePhoto: string | null;
   fullName: string | null;
   isDriving: boolean;
+  firstName: string;
+  lastName: string;
+  email: string | null;
 }
 
 export interface userProfile_GetMyProfile {
