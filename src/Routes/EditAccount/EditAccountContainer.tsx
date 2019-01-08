@@ -1,6 +1,7 @@
 import React from 'react';
 import { Mutation, Query } from 'react-apollo';
 import { RouteComponentProps } from 'react-router';
+import { toast } from 'react-toastify';
 import { USER_PROFILE } from 'src/shqred.queries';
 import { updateProfile, updateProfileVariables, userProfile } from 'src/types/api';
 import { UPDATE_PROFILE } from './EditAccount.queries';
@@ -35,14 +36,30 @@ class EditAccountContainer extends React.Component<IProps, IState> {
         } = this.state;
         
         return (
-            <ProfileQuery query={USER_PROFILE} onCompleted={this.updateFields}>
+            <ProfileQuery 
+                query={USER_PROFILE} 
+                fetchPolicy={"cache-and-network"} // 페이지 진입시 캐시 이용하지 않고 api 호출하도록 하는 옵션
+                onCompleted={this.updateFields}
+            >
                 {() => (
-                    <UpdateProfileMutation mutation = {UPDATE_PROFILE} variables = {{
-                        email,
-                        firstName,
-                        lastName,
-                        profilePhoto
-                    }}>
+                    <UpdateProfileMutation 
+                        mutation = {UPDATE_PROFILE} 
+                        refetchQueries = {[{query: USER_PROFILE}]}
+                        onCompleted = {data => {
+                            const {UpdateMyProfile} = data;
+                            if(UpdateMyProfile.ok ){
+                                toast.success('Profile Updated!');
+                            } else {
+                                toast.error(UpdateMyProfile.error);
+                            }
+                        }}
+                        variables = {{
+                            email,
+                            firstName,
+                            lastName,
+                            profilePhoto
+                        }}
+                    >
                     {(updateProfileFn, {loading}) => (
                         <EditAccountPresenter 
                             email={email}
