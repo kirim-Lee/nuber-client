@@ -6,4 +6,10 @@ export const USER_LOG_IN = gql`
     }
 `;
 
+export const USER_LOG_OUT = gql`
+    mutation userLogOut {
+        logUserOut @client
+    }
+`;
+
 // logUserIn --> from apollo.ts
