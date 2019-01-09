@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 import {Link} from 'react-router-dom';
 import Header from 'src/Components/Header';
 import Place from 'src/Components/Place';
-import { userProfile } from 'src/types/api';
+import { getPlaces, userProfile } from 'src/types/api';
 import styled from '../../typed-components';
 
 const Container = styled.div`
@@ -27,6 +27,11 @@ const Key = styled.span`
   margin-bottom: 5px;
 `;
 
+const Image = styled.img`
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+`;
 
 const FakeLink = styled.span`
     text-decoration: underline;
@@ -42,9 +47,17 @@ const SLink = styled(Link)`
 interface IProps {
     userLogOut: MutationFn;
     Profile?: userProfile;
+    Places?: getPlaces;
     ProfileLoading: boolean;
+    PlacesLoading: boolean;
 }
-const SettingsPresenter: React.SFC<IProps> = ({userLogOut, Profile: {GetMyProfile: {user = null} = {}} = {}, ProfileLoading}) => (
+const SettingsPresenter: React.SFC<IProps> = ({
+    userLogOut, 
+    Profile: {GetMyProfile: {user = null} = {}} = {}, 
+    Places: {GetMyPlaces: {places = null} = {}} = {},
+    ProfileLoading,
+    PlacesLoading
+}) => (
     <React.Fragment>
         <Helmet>
             <title>Settings | Nuber</title>
@@ -52,15 +65,22 @@ const SettingsPresenter: React.SFC<IProps> = ({userLogOut, Profile: {GetMyProfil
         <Header title={"Account Settings"} backTo={"/"} />
         <Container>
             <GridLink to={"/edit-account"}>
-                {!ProfileLoading && user} 
+                {!ProfileLoading && user && user.profilePhoto && <Image src={user.profilePhoto} />} 
+                {!ProfileLoading && user &&
                 <Keys>
-                    <Key>Nico</Key>
-                    <Key>Home</Key>
+                    <Key>{user.fullName}</Key>
+                    <Key>{user.email}</Key>
                 </Keys>
+                }
             </GridLink>
-            <Place fav={false} name={"Home"} address={"12345"} />
-            <Place fav={false} name={"Home"} address={"12345"} />
-            <Place fav={false} name={"Home"} address={"12345"} />
+            {!PlacesLoading && 
+            <React.Fragment>
+                {places && (places.length || '') && places.map((place, index) => {
+                    return place ? <Place key={index} fav={place.isFav} name={place.name} address={place.address} /> : '';
+                })}
+            </React.Fragment>
+            }
+            
             <SLink to={"/places"}>Go to Places</SLink>
             <FakeLink onClick={userLogOut}>Log Out</FakeLink>
         </Container>
