@@ -2,7 +2,7 @@ import React from 'react';
 
 interface IProps {
     submitFn: (event: React.FormEvent<HTMLFormElement | HTMLButtonElement>) => void;
-    className: string;
+    className?: string;
 }
 const Form: React.SFC<IProps> = ({submitFn, className, children}) => (
     <form 
