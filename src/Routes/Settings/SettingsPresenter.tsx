@@ -76,7 +76,7 @@ const SettingsPresenter: React.SFC<IProps> = ({
             {!PlacesLoading && 
             <React.Fragment>
                 {places && (places.length || '') && places.map((place, index) => {
-                    return place ? <Place key={index} fav={place.isFav} name={place.name} address={place.address} /> : '';
+                    return place ? <Place key={index} id={place.id} fav={place.isFav} name={place.name} address={place.address} /> : '';
                 })}
             </React.Fragment>
             }
