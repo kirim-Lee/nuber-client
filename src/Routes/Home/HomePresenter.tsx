@@ -24,10 +24,9 @@ const HomePresenter: React.SFC<IProps> = ({isMenuOpen, toggleMenu, loading}) => 
             }}}
         >
             {!loading && <button onClick={()=> toggleMenu()}>
-                Open sidebar
+                Open sidebar 
             </button>}
         </Sidebar>
-
     </Container>
 );
 
