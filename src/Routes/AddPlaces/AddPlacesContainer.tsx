@@ -20,11 +20,15 @@ interface IProps extends RouteComponentProps<any> {}
 class AddPlaceQuery extends Mutation<addPlace, addPlaceVariables>{}
 
 class AddPlacesContainer extends React.Component<IProps, IState> {
-    public state = {
-        address: "",
-        lat:0,
-        lng:0,
-        name: ""
+    constructor(props) {
+        super(props);
+        const { location : {state = {}} ={} } = props;
+        this.state = {
+            address: state.address || "",
+            lat: state.lat || 0,
+            lng: state.lng || 0,
+            name: ""
+        }
     }
     public render() {
         const {address, name, lat, lng} = this.state;

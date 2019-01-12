@@ -40,7 +40,7 @@ const PlacesPresenter: React.SFC<IProps> = ({data: {GetMyPlaces: {places = null}
                     />
                 ))
             )}    
-            <SLink to={"/add-place"}>Add some places!</SLink> 
+            <SLink to={"/find-address"}>Add some places!</SLink> 
         </Container>
     </React.Fragment>
 )
