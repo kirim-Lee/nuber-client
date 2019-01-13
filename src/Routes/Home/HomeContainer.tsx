@@ -15,8 +15,8 @@ interface IState {
     toAddress: string;
     toLat: number;
     toLng: number;
-    distance?: string;
-    duration?: string;
+    distance?: number;
+    duration?: number;
     price?: number;
 }
 
@@ -38,12 +38,15 @@ class HomeContainer extends React.Component<IProps, IState>{
         timeout: 5000,
     }
     public state = {
+        distance: 0,
+        duration: 0,
         isMenuOpen: false,
         lat: 0,
         lng: 0,
+        price: 0, 
         toAddress: '',
         toLat: 0,
-        toLng: 0
+        toLng: 0,
     }
     constructor(props) {
         super(props);
@@ -57,7 +60,7 @@ class HomeContainer extends React.Component<IProps, IState>{
         )
     }
     public render(){
-        const {isMenuOpen, toAddress} = this.state;
+        const {isMenuOpen, toAddress, price} = this.state;
         return <ProfileQuery query={USER_PROFILE}>
                 {({loading}) => (
                     <HomePresenter 
@@ -68,6 +71,7 @@ class HomeContainer extends React.Component<IProps, IState>{
                         toAddress = {toAddress}
                         onInputChange = {this.onInputChange}
                         onAddressSubmit = {this.onAddressSubmit}
+                        price ={ price }
                     />
                 )}
                 
@@ -192,23 +196,37 @@ class HomeContainer extends React.Component<IProps, IState>{
             travelMode: google.maps.TravelMode.DRIVING
         }
         
-        directionsService.route(directionsOptions, (result, status) => {
-            if (status === google.maps.DirectionsStatus.OK) {
-                const {routes} = result;
-                const { 
-                    distance: {text: distance},
-                    duration: {text: duration}
-                } = routes[0].legs[0];
-                this.setState({
-                    distance,
-                    duration
-                })
-                this.directions.setDirections(result);
-                this.directions.setMap(this.map);
-            } else {
-                toast.error("there is no route there..")
-            }
-        })
+        directionsService.route(directionsOptions, this.handleRouteRequest);
+    }
+
+    public handleRouteRequest = (
+        result: google.maps.DirectionsResult, 
+        status: google.maps.DirectionsStatus
+    ) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+            const {routes} = result;
+            const { 
+                distance: {value: distance},
+                duration: {value: duration}
+            } = routes[0].legs[0];
+            this.directions.setDirections(result);
+            this.directions.setMap(this.map);
+            this.setState({
+                distance,
+                duration
+            }, this.setPrice);
+        } else {
+            toast.error("there is no route there..")
+        }
+    }
+
+    public setPrice = () => {
+        const { distance } = this.state;
+        if (distance) {
+            this.setState({
+                price: Math.floor(distance/1000) * 3
+            })
+        }
     }
 }
 
