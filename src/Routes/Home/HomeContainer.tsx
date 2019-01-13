@@ -5,8 +5,13 @@ import { RouteComponentProps } from 'react-router';
 import { toast } from 'react-toastify';
 import { geoCode } from 'src/mapHelpers';
 import { USER_PROFILE } from 'src/shqred.queries';
-import { reportMovement, reportMovementVariables, userProfile } from 'src/types/api';
-import { REPORT_LOCATION } from './Home.queries';
+import { 
+    getNearByDrivers, 
+    reportMovement, 
+    reportMovementVariables, 
+    userProfile 
+} from 'src/types/api';
+import { GET_NEARBY_DRIVERS, REPORT_LOCATION} from './Home.queries';
 import HomePresenter from './HomePresenter';
 
 interface IState {
@@ -27,6 +32,7 @@ interface IProps extends RouteComponentProps<any> {
 }
 
 class ProfileQuery extends Query<userProfile>{}
+class NearbyQueries extends Query<getNearByDrivers>{}
 
 class HomeContainer extends React.Component<IProps, IState>{
     public map: google.maps.Map;
@@ -63,21 +69,29 @@ class HomeContainer extends React.Component<IProps, IState>{
     }
     public render(){
         const {isMenuOpen, toAddress, price} = this.state;
-        return <ProfileQuery query={USER_PROFILE}>
-                {({loading}) => (
-                    <HomePresenter 
-                        loading = {loading}
-                        isMenuOpen = {isMenuOpen}
-                        toggleMenu = {this.toggleMenu}
-                        mapRef = {this.mapRef}
-                        toAddress = {toAddress}
-                        onInputChange = {this.onInputChange}
-                        onAddressSubmit = {this.onAddressSubmit}
-                        price ={ price }
-                    />
+        return (
+            <ProfileQuery query={USER_PROFILE}>
+                {({data, loading}) => (
+                    <NearbyQueries query={GET_NEARBY_DRIVERS}>
+                        {() => (
+                            <HomePresenter 
+                                loading = {loading}
+                                isMenuOpen = {isMenuOpen}
+                                toggleMenu = {this.toggleMenu}
+                                mapRef = {this.mapRef}
+                                toAddress = {toAddress}
+                                onInputChange = {this.onInputChange}
+                                onAddressSubmit = {this.onAddressSubmit}
+                                price ={ price }
+                                data = {data}
+                            />
+                        )}
+                    </NearbyQueries>
+                    
                 )}
                 
             </ProfileQuery>
+        )
     }
 
     public toggleMenu = () => {

@@ -97,6 +97,31 @@ export interface reportMovementVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: getNearByDrivers
+// ====================================================
+
+export interface getNearByDrivers_GetNearByDrivers_drivers {
+  __typename: "User";
+  id: number;
+  lastLat: number | null;
+  lastLng: number | null;
+}
+
+export interface getNearByDrivers_GetNearByDrivers {
+  __typename: "GetNearbyDriversResponse";
+  ok: boolean;
+  error: string | null;
+  drivers: (getNearByDrivers_GetNearByDrivers_drivers | null)[] | null;
+}
+
+export interface getNearByDrivers {
+  GetNearByDrivers: getNearByDrivers_GetNearByDrivers;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: toggleDriving
 // ====================================================
 

@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import Sidebar from 'react-sidebar';
 import AddressBar from 'src/Components/AddressBar';
 import Button from 'src/Components/Button';
+import { userProfile } from 'src/types/api';
 import styled from '../../typed-components';
 import Menu from '../Menu';
 
@@ -55,6 +56,7 @@ interface IProps {
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onAddressSubmit: (event: React.ChangeEvent<HTMLInputElement>) => void;
     price: number;
+    data?: userProfile;
 }
 const HomePresenter: React.SFC<IProps> = ({
     isMenuOpen, 
@@ -64,7 +66,8 @@ const HomePresenter: React.SFC<IProps> = ({
     toAddress,
     onInputChange,
     onAddressSubmit,
-    price
+    price,
+    data: {GetMyProfile: {user = null} = {}} = {}
 }) => (
     <Container>
         <Helmet>Home | Nuber</Helmet>
@@ -81,12 +84,22 @@ const HomePresenter: React.SFC<IProps> = ({
             {!loading && <MenuButton onClick={()=> toggleMenu()}>|||</MenuButton>}
         </Sidebar>
         <Map ref={mapRef}/>
-        <AddressBar
-            name={"toAddress"}
-            onChange={onInputChange}
-            value={toAddress}
-            onBlur={()=> null}
-        />    
+        { user && !user.isDriving && (
+            <React.Fragment>
+                <AddressBar
+                    name={"toAddress"}
+                    onChange={onInputChange}
+                    value={toAddress}
+                    onBlur={()=> null}
+                />
+                <ExtendedButton
+                    onClick={onAddressSubmit}
+                    disabled={toAddress === ""}
+                    value={price? "Change Address" :"Pick Address"}
+                />
+            </React.Fragment>
+        )}
+
         {price ? (
             <RequestButton
                 onClick={onAddressSubmit}
@@ -94,11 +107,7 @@ const HomePresenter: React.SFC<IProps> = ({
                 value={`Request Ride ($${price})`}
             />
         ) : "" }
-        <ExtendedButton
-            onClick={onAddressSubmit}
-            disabled={toAddress === ""}
-            value={price? "Change Address" :"Pick Address"}
-        />
+        
     </Container>
 );
 
