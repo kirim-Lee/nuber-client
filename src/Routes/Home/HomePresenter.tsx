@@ -1,12 +1,14 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import Sidebar from 'react-sidebar';
+import AddressBar from 'src/Components/AddressBar';
+import Button from 'src/Components/Button';
 import styled from '../../typed-components';
 import Menu from '../Menu';
 
 const Container = styled.div``;
 
-const Button = styled.button`
+const MenuButton = styled.button`
   appearance: none;
   padding: 10px;
   position: absolute;
@@ -23,19 +25,39 @@ const Button = styled.button`
 `;
 
 const Map = styled.div`
-    position: absolute;
-    top:0;
-    left: 0;
-    height: 100%;
-    width: 100%;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+`;
+
+const ExtendedButton = styled(Button)`
+  position: absolute;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: 10;
+  height: auto;
+  width: 80%;
 `;
 interface IProps {
     isMenuOpen: boolean;
     toggleMenu: () => void;
     loading: boolean;
     mapRef: any;
+    toAddress: string;
+    onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onAddressSubmit: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
-const HomePresenter: React.SFC<IProps> = ({isMenuOpen, toggleMenu, loading, mapRef}) => (
+const HomePresenter: React.SFC<IProps> = ({
+    isMenuOpen, 
+    toggleMenu, 
+    loading, 
+    mapRef,
+    toAddress,
+    onInputChange,
+    onAddressSubmit
+}) => (
     <Container>
         <Helmet>Home | Nuber</Helmet>
         <Sidebar
@@ -48,9 +70,20 @@ const HomePresenter: React.SFC<IProps> = ({isMenuOpen, toggleMenu, loading, mapR
                 zIndex: '10',
             }}}
         >
-            {!loading && <Button onClick={()=> toggleMenu()}>|||</Button>}
+            {!loading && <MenuButton onClick={()=> toggleMenu()}>|||</MenuButton>}
         </Sidebar>
         <Map ref={mapRef}/>
+        <AddressBar
+            name={"toAddress"}
+            onChange={onInputChange}
+            value={toAddress}
+            onBlur={()=> null}
+        />    
+        <ExtendedButton
+            onClick={onAddressSubmit}
+            disabled={toAddress === ""}
+            value={"Pick Address"}
+        />
     </Container>
 );
 

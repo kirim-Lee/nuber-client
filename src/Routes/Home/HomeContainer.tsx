@@ -2,6 +2,7 @@ import React from 'react';
 import { Query } from 'react-apollo';
 import ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router';
+import { geoCode } from 'src/mapHelpers';
 import { USER_PROFILE } from 'src/shqred.queries';
 import { userProfile } from 'src/types/api';
 import HomePresenter from './HomePresenter';
@@ -10,6 +11,9 @@ interface IState {
     isMenuOpen: boolean;
     lat: number;
     lng: number;
+    toAddress: string;
+    toLat: number;
+    toLng: number;
 }
 
 interface IProps extends RouteComponentProps<any> {
@@ -21,6 +25,7 @@ class ProfileQuery extends Query<userProfile>{}
 class HomeContainer extends React.Component<IProps, IState>{
     public map: google.maps.Map;
     public userMarker: google.maps.Marker;
+    public toMarker: google.maps.Marker;
     public mapRef: any;
     public mapOptions = {
         enableHighAccuracy: true,
@@ -30,7 +35,10 @@ class HomeContainer extends React.Component<IProps, IState>{
     public state = {
         isMenuOpen: false,
         lat: 0,
-        lng: 0
+        lng: 0,
+        toAddress: '',
+        toLat: 0,
+        toLng: 0
     }
     constructor(props) {
         super(props);
@@ -44,7 +52,7 @@ class HomeContainer extends React.Component<IProps, IState>{
         )
     }
     public render(){
-        const {isMenuOpen} = this.state;
+        const {isMenuOpen, toAddress} = this.state;
         return <ProfileQuery query={USER_PROFILE}>
                 {({loading}) => (
                     <HomePresenter 
@@ -52,6 +60,9 @@ class HomeContainer extends React.Component<IProps, IState>{
                         isMenuOpen = {isMenuOpen}
                         toggleMenu = {this.toggleMenu}
                         mapRef = {this.mapRef}
+                        toAddress = {toAddress}
+                        onInputChange = {this.onInputChange}
+                        onAddressSubmit = {this.onAddressSubmit}
                     />
                 )}
                 
@@ -115,6 +126,40 @@ class HomeContainer extends React.Component<IProps, IState>{
     }
     public handleGeoWatchError = () => { 
         console.log('Error watch you');
+    }
+
+    public onInputChange: React.ChangeEventHandler<HTMLInputElement> = (event: React.ChangeEvent<HTMLInputElement>) : void => {
+        const {target : {name, value}} = event;
+        this.setState({
+            [name]: value
+        } as any);
+    }
+
+    public onAddressSubmit: React.ChangeEventHandler<HTMLInputElement> = async () => {
+        const {toAddress} = this.state;
+        const coords = await geoCode(toAddress);
+        const {google} = this.props;
+        const maps = google.maps;
+        if (coords) {
+            const {lat, lng} = coords;
+            this.setState({
+                toAddress: coords.formatted_address,
+                toLat: coords.lat,
+                toLng: coords.lng
+            })
+            // console.log(lat, lng, coords.formatted_address)
+            if (this.toMarker) {
+                this.toMarker.setMap(null);
+            }
+            const toMarkerOptions: google.maps.MarkerOptions = {
+                position: {
+                    lat,
+                    lng
+                }
+            }
+            this.toMarker = new maps.Marker(toMarkerOptions);
+            this.toMarker.setMap(this.map);
+        }
     }
 }
 
