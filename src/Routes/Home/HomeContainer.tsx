@@ -2,6 +2,7 @@ import React from 'react';
 import { Query } from 'react-apollo';
 import ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router';
+import { toast } from 'react-toastify';
 import { geoCode } from 'src/mapHelpers';
 import { USER_PROFILE } from 'src/shqred.queries';
 import { userProfile } from 'src/types/api';
@@ -14,6 +15,9 @@ interface IState {
     toAddress: string;
     toLat: number;
     toLng: number;
+    distance?: string;
+    duration?: string;
+    price?: number;
 }
 
 interface IProps extends RouteComponentProps<any> {
@@ -26,6 +30,7 @@ class HomeContainer extends React.Component<IProps, IState>{
     public map: google.maps.Map;
     public userMarker: google.maps.Marker;
     public toMarker: google.maps.Marker;
+    public directions: google.maps.DirectionsRenderer;
     public mapRef: any;
     public mapOptions = {
         enableHighAccuracy: true,
@@ -100,7 +105,6 @@ class HomeContainer extends React.Component<IProps, IState>{
                 lng
             },
             disableDefaultUI: true,
-            minZoom: 8,
             zoom: 11
         };
         this.map = new maps.Map(mapNode, mapConfig);
@@ -142,11 +146,7 @@ class HomeContainer extends React.Component<IProps, IState>{
         const maps = google.maps;
         if (coords) {
             const {lat, lng} = coords;
-            this.setState({
-                toAddress: coords.formatted_address,
-                toLat: coords.lat,
-                toLng: coords.lng
-            })
+            
             // console.log(lat, lng, coords.formatted_address)
             if (this.toMarker) {
                 this.toMarker.setMap(null);
@@ -159,7 +159,56 @@ class HomeContainer extends React.Component<IProps, IState>{
             }
             this.toMarker = new maps.Marker(toMarkerOptions);
             this.toMarker.setMap(this.map);
+            const bounds = new maps.LatLngBounds();
+            bounds.extend({lat, lng});
+            bounds.extend({lat: this.state.lat, lng: this.state.lng});
+            this.map.fitBounds(bounds);
+            this.setState({
+                toAddress: coords.formatted_address,
+                toLat: lat,
+                toLng: lng
+            }, this.createPath)
         }
+    }
+
+    public createPath = () => {
+        const {toLat, toLng, lat, lng } = this.state;
+        if(this.directions) {
+            this.directions.setMap(null);
+        }
+        const renderOptions: google.maps.DirectionsRendererOptions = {
+            polylineOptions: {
+                strokeColor: "#000"
+            },
+            suppressMarkers: true
+        }
+        this.directions = new google.maps.DirectionsRenderer(renderOptions);
+        const directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
+        const to = new google.maps.LatLng(toLat, toLng);
+        const from = new google.maps.LatLng(lat, lng);
+        const directionsOptions: google.maps.DirectionsRequest = {
+            destination: to,
+            origin: from,
+            travelMode: google.maps.TravelMode.DRIVING
+        }
+        
+        directionsService.route(directionsOptions, (result, status) => {
+            if (status === google.maps.DirectionsStatus.OK) {
+                const {routes} = result;
+                const { 
+                    distance: {text: distance},
+                    duration: {text: duration}
+                } = routes[0].legs[0];
+                this.setState({
+                    distance,
+                    duration
+                })
+                this.directions.setDirections(result);
+                this.directions.setMap(this.map);
+            } else {
+                toast.error("there is no route there..")
+            }
+        })
     }
 }
 
