@@ -48,7 +48,7 @@ class FindAddressContainer extends React.Component<IProps, IState> {
         )
     }
 
-    public handleGeoError = (err) => {
+    public handleGeoError: PositionErrorCallback = (err) => {
         this.loadMap(37.504606, 127.048962); // 위치 안되면 일단 진행 위해 로드맵 
         this.setState({
             address: '',
@@ -59,7 +59,7 @@ class FindAddressContainer extends React.Component<IProps, IState> {
         return ;
     }
 
-    public handleGeoSucces = (position: Position) => {
+    public handleGeoSucces: PositionCallback = (position: Position) => {
         const { coords: {latitude, longitude}} = position;
         this.setState({
             address: '',
