@@ -38,7 +38,7 @@ class HomeContainer extends React.Component<IProps, IState>{
     public map: google.maps.Map;
     public userMarker: google.maps.Marker;
     public toMarker: google.maps.Marker;
-    public drivers: google.maps.Marker[];
+    public drivers: google.maps.Marker[] = [];
     public directions: google.maps.DirectionsRenderer;
     public mapRef: any;
     public mapOptions = {
@@ -76,6 +76,7 @@ class HomeContainer extends React.Component<IProps, IState>{
                     
                     <NearbyQueries 
                         query={GET_NEARBY_DRIVERS} 
+                        pollInterval={1000} // 1초마다 다시 요청 하는데 refetch와 다름 업데이트가 있을때만 onCompleted를 호출한다.
                         skip={!!(data && data.GetMyProfile && data.GetMyProfile.user && 
                             data.GetMyProfile.user.isDriving)}
                         onCompleted={this.handleNearbyDrivers}
@@ -262,26 +263,40 @@ class HomeContainer extends React.Component<IProps, IState>{
 
     public handleNearbyDrivers = ( data: {} | getNearByDrivers) => {
         if ("GetNearByDrivers" in data) {
-            console.log('here cathsx')
             const {GetNearByDrivers: {drivers, ok}} = data;
-            console.log('here');
             if(ok && drivers) {
                 drivers.map(driver => {
                     if(driver && driver.lastLat && driver.lastLng){
-                        const markerOptions: google.maps.MarkerOptions = {
-                            icon: {
-                                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                                scale: 5
-                            },
-                            position: {
+                        const existingDriver: google.maps.Marker | undefined = this.drivers.find((driverMarker: google.maps.Marker): boolean => {
+                            return driverMarker.get('ID') === driver.id;
+                        });
+
+                        if (existingDriver) {
+                            // 추가된 드라이버가 있을 경우 
+                            existingDriver.setPosition({
                                 lat: driver.lastLat,
                                 lng: driver.lastLng
+                            });
+                            existingDriver.setMap(this.map);
+                        } else {
+                            // 추가된 드라이버가 없을경우
+                            const markerOptions: google.maps.MarkerOptions = {
+                                icon: {
+                                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                                    scale: 5,
+                                    strokeColor: 'orange'
+                                },
+                                position: {
+                                    lat: driver.lastLat,
+                                    lng: driver.lastLng
+                                }
                             }
+                            const newMarker: google.maps.Marker = new google.maps.Marker(markerOptions);
+                            newMarker.set('ID', driver.id); // 아이디 추적을 위해 꼭 적어줘야 함
+                            newMarker.setMap(this.map);
+                            this.drivers.push(newMarker);
                         }
-                        const newMarker: google.maps.Marker = new google.maps.Marker(markerOptions);
-                        newMarker.set('ID', driver.id); // 아이디 추적을 위해 꼭 적어줘야 함
-                        newMarker.setMap(this.map);
-                        this.drivers.push(newMarker);
+                        
                     }
                 });
             }
