@@ -38,6 +38,7 @@ class HomeContainer extends React.Component<IProps, IState>{
     public map: google.maps.Map;
     public userMarker: google.maps.Marker;
     public toMarker: google.maps.Marker;
+    public drivers: google.maps.Marker[];
     public directions: google.maps.DirectionsRenderer;
     public mapRef: any;
     public mapOptions = {
@@ -72,7 +73,13 @@ class HomeContainer extends React.Component<IProps, IState>{
         return (
             <ProfileQuery query={USER_PROFILE}>
                 {({data, loading}) => (
-                    <NearbyQueries query={GET_NEARBY_DRIVERS}>
+                    
+                    <NearbyQueries 
+                        query={GET_NEARBY_DRIVERS} 
+                        skip={!!(data && data.GetMyProfile && data.GetMyProfile.user && 
+                            data.GetMyProfile.user.isDriving)}
+                        onCompleted={this.handleNearbyDrivers}
+                    >
                         {() => (
                             <HomePresenter 
                                 loading = {loading}
@@ -250,6 +257,34 @@ class HomeContainer extends React.Component<IProps, IState>{
             this.setState({
                 price: Math.floor(distance/1000) * 3
             })
+        }
+    }
+
+    public handleNearbyDrivers = ( data: {} | getNearByDrivers) => {
+        if ("GetNearByDrivers" in data) {
+            console.log('here cathsx')
+            const {GetNearByDrivers: {drivers, ok}} = data;
+            console.log('here');
+            if(ok && drivers) {
+                drivers.map(driver => {
+                    if(driver && driver.lastLat && driver.lastLng){
+                        const markerOptions: google.maps.MarkerOptions = {
+                            icon: {
+                                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                                scale: 5
+                            },
+                            position: {
+                                lat: driver.lastLat,
+                                lng: driver.lastLng
+                            }
+                        }
+                        const newMarker: google.maps.Marker = new google.maps.Marker(markerOptions);
+                        newMarker.set('ID', driver.id); // 아이디 추적을 위해 꼭 적어줘야 함
+                        newMarker.setMap(this.map);
+                        this.drivers.push(newMarker);
+                    }
+                });
+            }
         }
     }
 }
