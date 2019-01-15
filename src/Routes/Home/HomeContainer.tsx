@@ -1,23 +1,26 @@
 import React from 'react';
-import { graphql, MutationFn, Query } from 'react-apollo';
+import { graphql, Mutation, MutationFn, Query } from 'react-apollo';
 import ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router';
 import { toast } from 'react-toastify';
-import { geoCode } from 'src/mapHelpers';
+import { geoCode, reverseGeoCode } from 'src/mapHelpers';
 import { USER_PROFILE } from 'src/shqred.queries';
 import { 
     getNearByDrivers, 
     reportMovement, 
     reportMovementVariables, 
-    userProfile 
+    requestRide,
+    requestRideVariables,
+    userProfile, 
 } from 'src/types/api';
-import { GET_NEARBY_DRIVERS, REPORT_LOCATION} from './Home.queries';
+import { GET_NEARBY_DRIVERS, REPORT_LOCATION, REQUEST_RIDE} from './Home.queries';
 import HomePresenter from './HomePresenter';
 
 interface IState {
     isMenuOpen: boolean;
     lat: number;
     lng: number;
+    fromAddress: string;
     toAddress: string;
     toLat: number;
     toLng: number;
@@ -33,6 +36,7 @@ interface IProps extends RouteComponentProps<any> {
 
 class ProfileQuery extends Query<userProfile>{}
 class NearbyQueries extends Query<getNearByDrivers>{}
+class RequestRideMutation extends Mutation<requestRide, requestRideVariables>{}
 
 class HomeContainer extends React.Component<IProps, IState>{
     public map: google.maps.Map;
@@ -49,6 +53,7 @@ class HomeContainer extends React.Component<IProps, IState>{
     public state = {
         distance: 0,
         duration: 0,
+        fromAddress: '',
         isMenuOpen: false,
         lat: 0,
         lng: 0,
@@ -69,7 +74,7 @@ class HomeContainer extends React.Component<IProps, IState>{
         )
     }
     public render(){
-        const {isMenuOpen, toAddress, price} = this.state;
+        const {isMenuOpen, toAddress, price, fromAddress, lat, lng, toLat, toLng, distance, duration} = this.state;
         return (
             <ProfileQuery query={USER_PROFILE}>
                 {({data, loading}) => (
@@ -82,17 +87,33 @@ class HomeContainer extends React.Component<IProps, IState>{
                         onCompleted={this.handleNearbyDrivers}
                     >
                         {() => (
-                            <HomePresenter 
-                                loading = {loading}
-                                isMenuOpen = {isMenuOpen}
-                                toggleMenu = {this.toggleMenu}
-                                mapRef = {this.mapRef}
-                                toAddress = {toAddress}
-                                onInputChange = {this.onInputChange}
-                                onAddressSubmit = {this.onAddressSubmit}
-                                price ={ price }
-                                data = {data}
-                            />
+                            <RequestRideMutation mutation={REQUEST_RIDE} variables={{
+                                distance: distance.toString(),
+                                dropOffAddress: toAddress,
+                                dropOffLat: toLat,
+                                dropOffLng: toLng,
+                                duration: duration.toString(),
+                                pickUpAddress: fromAddress,
+                                pickUpLat: lat,
+                                pickUpLng: lng,
+                                price
+                            }}>
+                            {(requestRideFn, {loading: requestRideLoading}) => (
+                                <HomePresenter 
+                                    loading = {loading}
+                                    isMenuOpen = {isMenuOpen}
+                                    toggleMenu = {this.toggleMenu}
+                                    mapRef = {this.mapRef}
+                                    toAddress = {toAddress}
+                                    onInputChange = {this.onInputChange}
+                                    onAddressSubmit = {this.onAddressSubmit}
+                                    requestRideFn= {requestRideFn}
+                                    price ={ price }
+                                    data = {data}
+                                />
+                            )}
+                            </RequestRideMutation>
+                            
                         )}
                     </NearbyQueries>
                     
@@ -116,7 +137,17 @@ class HomeContainer extends React.Component<IProps, IState>{
             lat: latitude,
             lng: longitude
         });
+        this.getFromAddress(latitude, longitude);
         this.loadMap(latitude, longitude);
+    }
+
+    public getFromAddress = async (lat: number, lng: number) => {
+        const address = await reverseGeoCode(lat, lng);
+        if (address) {
+            this.setState({
+                fromAddress: address
+            })
+        }
     }
 
     public handleGeoError = () => {
@@ -237,6 +268,7 @@ class HomeContainer extends React.Component<IProps, IState>{
     ) => {
         if (status === google.maps.DirectionsStatus.OK) {
             const {routes} = result;
+            console.log(routes);
             const { 
                 distance: {value: distance},
                 duration: {value: duration}
