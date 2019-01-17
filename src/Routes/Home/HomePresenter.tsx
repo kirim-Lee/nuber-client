@@ -4,7 +4,8 @@ import Helmet from 'react-helmet';
 import Sidebar from 'react-sidebar';
 import AddressBar from 'src/Components/AddressBar';
 import Button from 'src/Components/Button';
-import { userProfile } from 'src/types/api';
+import RidePopUp from 'src/Components/RidePopUp';
+import { getRides, userProfile} from 'src/types/api';
 import styled from '../../typed-components';
 import Menu from '../Menu';
 
@@ -59,6 +60,8 @@ interface IProps {
     price: number;
     data?: userProfile;
     requestRideFn: MutationFn;
+    nearbyRide?: getRides;
+    acceptRideFn?: MutationFn;
 }
 const HomePresenter: React.SFC<IProps> = ({
     isMenuOpen, 
@@ -70,7 +73,10 @@ const HomePresenter: React.SFC<IProps> = ({
     onAddressSubmit,
     price,
     data: {GetMyProfile: {user = null} = {}} = {},
-    requestRideFn
+    nearbyRide,
+    nearbyRide: {GetNearByRide: {ride = null} = {}} = {},
+    requestRideFn,
+    acceptRideFn
 }) => (
     <Container>
         <Helmet>Home | Nuber</Helmet>
@@ -86,7 +92,6 @@ const HomePresenter: React.SFC<IProps> = ({
         >
             {!loading && <MenuButton onClick={()=> toggleMenu()}>|||</MenuButton>}
         </Sidebar>
-        <Map ref={mapRef}/>
         { user && !user.isDriving && (
             <React.Fragment>
                 <AddressBar
@@ -102,15 +107,26 @@ const HomePresenter: React.SFC<IProps> = ({
                 />
             </React.Fragment>
         )}
-
         {price ? (
             <RequestButton
-                onClick={requestRideFn}
-                disabled={toAddress === ""}
-                value={`Request Ride ($${price})`}
+            onClick={requestRideFn}
+            disabled={toAddress === ""}
+            value={`Request Ride ($${price})`}
             />
         ) : "" }
-        
+        {ride && (
+            <RidePopUp
+                id={ride.id}
+                pickUpAddress={ride.pickUpAddress}
+                dropOffAddress={ride.dropOffAddress}
+                price={ride.price}
+                distance={ride.distance}
+                passengerName={ride.passenger.fullName!}
+                passengerPhoto={ride.passenger.profilePhoto!}
+                acceptRideFn={acceptRideFn}
+            />
+        )}
+        <Map ref={mapRef}/>
     </Container>
 );
 
