@@ -73,7 +73,6 @@ const HomePresenter: React.SFC<IProps> = ({
     onAddressSubmit,
     price,
     data: {GetMyProfile: {user = null} = {}} = {},
-    nearbyRide,
     nearbyRide: {GetNearByRide: {ride = null} = {}} = {},
     requestRideFn,
     acceptRideFn

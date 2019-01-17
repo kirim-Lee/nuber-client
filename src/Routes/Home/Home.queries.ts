@@ -87,7 +87,8 @@ export const ACCEPT_RIDE = gql`
     mutation acceptRide($rideId: Int!) {
         UpdateRideStatus(rideId: $rideId, status: ACCEPTED) {
             ok
-            error
+            error,
+            rideId
         }
     }
 `;

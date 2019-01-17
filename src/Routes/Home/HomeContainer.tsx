@@ -135,29 +135,32 @@ class HomeContainer extends React.Component<IProps, IState>{
                             {(requestRideFn) => (
                                 <GetNearByRides query={GET_NEARBY_RIDE} skip={!isDriving}>
                                 {({subscribeToMore, data: nearbyRide}) => {
+                                    // subscription
                                     const rideSubscriptionOptions: SubscribeToMoreOptions = {
                                         document: SUBSCRIBE_NEARBY_RIDES,
                                         updateQuery:  (prev, { subscriptionData }) => {
                                             if (!subscriptionData.data) {
                                                 return prev;
                                             }
-                                            console.log(prev);
-                                            console.log("ee", subscriptionData);
                                             const newObject = Object.assign({}, prev, {
                                                 GetNearByRide: {
                                                     ...prev.GetNearByRide,
                                                     ride: subscriptionData.data.NearbyRideSubscription
                                                 }
                                             });
-                                            console.log(newObject)
                                             return newObject;
                                         }
                                     }
                                     if (isDriving) {
                                         subscribeToMore(rideSubscriptionOptions);
                                     }
+                                    // subscription end
+
                                     return (
-                                        <AcceptRide mutation={ACCEPT_RIDE}>
+                                        <AcceptRide 
+                                            mutation={ACCEPT_RIDE}
+                                            onCompleted={this.handleRideAcceptance}
+                                        >
                                         {(acceptRideFn) => (
                                             <HomePresenter 
                                                 loading = {loading}
@@ -403,9 +406,11 @@ class HomeContainer extends React.Component<IProps, IState>{
         }
     }
     public handleRideRequest = (data: requestRide) => {
+        const {history} = this.props;
         const {RequestRide} = data;
         if(RequestRide.ok) {
             toast.success("Drive requested, finding a driver");
+            history.push(`/ride/${RequestRide.ride!.id}`);
         } else {
             toast.error(RequestRide.error);
         }
@@ -423,6 +428,14 @@ class HomeContainer extends React.Component<IProps, IState>{
         }
     }
 
+    public handleRideAcceptance = (data: acceptRide) => {
+        const {history} = this.props;
+        const {UpdateRideStatus} = data;
+        if (UpdateRideStatus.ok) {
+            history.push(`/ride/${UpdateRideStatus.rideId}`);
+        }
+    }
+
 }
 
 export default graphql<any, reportMovement, reportMovementVariables>(
@@ -430,4 +443,4 @@ export default graphql<any, reportMovement, reportMovementVariables>(
     {
         name: "reportLocation"
     }
-)(HomeContainer);
+    )(HomeContainer);
