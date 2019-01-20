@@ -7,6 +7,7 @@ import {
     Switch} from 'react-router-dom';
 // routes
 import AddPlace from '../../Routes/AddPlaces';
+import Chat from '../../Routes/Chat';
 import EditAccount from '../../Routes/EditAccount';
 import FindAddress from '../../Routes/FindAddress';
 import Home from '../../Routes/Home';
@@ -33,7 +34,8 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
 const LoggedInRoutes: React.SFC = () => (
     <Switch>
         <Route path={"/"} exact={true} component={Home}/>
-        <Route path={"/ride/:rideId"} exact={true} component={Ride}/>
+        <Route path={"/ride/:rideId"} exact={true} component={Ride} />
+        <Route path={"/chat/:chatId"} exact={true} component={Chat} />
         <Route path={"/edit-account"} exact={true} component={EditAccount}/>
         <Route path={"/settings"} exact={true} component={Settings}/>
         <Route path={"/places"} exact={true} component={Places}/>
