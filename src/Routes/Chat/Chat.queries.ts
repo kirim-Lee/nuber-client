@@ -1,7 +1,7 @@
 import {gql} from 'apollo-boost';
 
 export const GET_CHAT = gql`
-    query getChat($chatId: Int!) {
+    query getChat($chatId: Int) {
         GetChat(chatId: $chatId) {
             ok
             error
@@ -11,6 +11,7 @@ export const GET_CHAT = gql`
                 messages {
                     id
                     text
+                    chatId
                     userId
                 }
             }
@@ -30,10 +31,22 @@ export const SEND_MESSAGE =  gql`
             ok
             error
             message{
+                id
                 text
                 chatId
+                userId
             }
         }
     }
+`;
 
+export const SUBSCRIBE_TO_MESSAGES = gql`
+    subscription messageSubscription{
+        MessageSubscription{
+            id
+            text
+            chatId
+            userId
+        }
+    }
 `;

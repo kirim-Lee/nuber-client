@@ -9,6 +9,7 @@ const Container = styled<{mine: boolean}, any>("div")`
     align-self: ${props => props.mine ? 'flex-end': 'flex-start'};
     border-bottom-right-radius: ${props => props.mine ? 0: '20px'};
     border-bottom-left-radius: ${props => props.mine ? '20px': 0 };
+    margin: 5px 0;
 `;
 
 interface IProps{

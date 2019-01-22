@@ -1,3 +1,4 @@
+import { SubscribeToMoreOptions } from 'apollo-client';
 import React from 'react';
 import { Mutation, MutationFn, Query } from 'react-apollo';
 import { RouteComponentProps } from 'react-router';
@@ -9,7 +10,7 @@ import {
     sendMessageVariables,
     userProfile
  } from 'src/types/api';
-import { GET_CHAT, SEND_MESSAGE } from './Chat.queries';
+import { GET_CHAT, SEND_MESSAGE, SUBSCRIBE_TO_MESSAGES } from './Chat.queries';
 import ChatPresenter from './ChatPresenter';
 
 interface IProps extends RouteComponentProps<any> {}
@@ -42,25 +43,50 @@ class ChatContainer extends React.Component<IProps, IState> {
                         query={GET_CHAT}
                         variables={{chatId: parseFloat(chatId)}}
                     >
-                        {({data, loading})=>(
-                            <SendMessageMutation 
-                                mutation={SEND_MESSAGE}
-                            >
-                                {(sendMessageFn) => {
-                                    this.sendMessageFn = sendMessageFn;
-                                    return (
-                                        <ChatPresenter 
-                                            data={data}
-                                            loading={loading}
-                                            userData={userData}
-                                            messageText={message}
-                                            onInputChange = {this.onInputChange}
-                                            onSubmit={this.onSubmit}
-                                        />
-                                    )
-                                }}
-                            </SendMessageMutation>
-                        )}
+                        {({subscribeToMore, data, loading})=>{
+                            const messageSubscriptionOption: SubscribeToMoreOptions = {
+                                document: SUBSCRIBE_TO_MESSAGES,                         updateQuery: (prev,{subscriptionData}) => {
+                                    if (!subscriptionData.data || !prev.GetChat ||
+                                        prev.GetChat.chat.messages[prev.GetChat.chat.messages.length-1].id === subscriptionData.data.MessageSubscription.id
+                                        ) {
+                                        return prev;
+                                    } else {
+                                        return Object.assign({}, prev, {
+                                            GetChat: {
+                                                ...prev.GetChat,
+                                                chat: {
+                                                    ...prev.GetChat.chat,
+                                                    messages: [
+                                                        ...prev.GetChat.chat.messages,
+                                                        subscriptionData.data.MessageSubscription
+                                                    ]
+                                                }
+                                            }
+                                        })
+                                    }
+                                }
+                            }
+                            subscribeToMore(messageSubscriptionOption);
+                            return (
+                                <SendMessageMutation 
+                                    mutation={SEND_MESSAGE}
+                                >
+                                    {(sendMessageFn) => {
+                                        this.sendMessageFn = sendMessageFn;
+                                        return (
+                                            <ChatPresenter 
+                                                data={data}
+                                                loading={loading}
+                                                userData={userData}
+                                                messageText={message}
+                                                onInputChange = {this.onInputChange}
+                                                onSubmit={this.onSubmit}
+                                            />
+                                        )
+                                    }}
+                                </SendMessageMutation>
+                            )
+                        }}
                     </ChatQuery>
 
                 )}

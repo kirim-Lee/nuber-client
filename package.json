@@ -15,6 +15,7 @@
     "apollo-link-ws": "^1.0.12",
     "apollo-utilities": "^1.1.0-alpha.8",
     "axios": "^0.18.0",
+    "global": "^4.3.2",
     "google-maps-react": "^2.0.2",
     "graphql": "^14.0.2",
     "react": "^16.6.3",
@@ -37,7 +38,8 @@
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
     "precodegen": "apollo schema:download --endpoint=http://localhost:4000/graphql",
-    "codegen": "apollo codegen:generate src/types/api.d.ts --queries=src/**/*.queries.ts --addTypename --schema schema.json --target=typescript --outputFlat"
+    "codegen": "apollo codegen:generate src/types/api.d.ts --queries=src/**/*.queries.ts --addTypename --schema schema.json --target=typescript --outputFlat",
+    "deploy": "gh-pages -d dist "
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
@@ -47,6 +49,8 @@
     "@types/react": "^16.7.17",
     "@types/react-dom": "^16.0.11",
     "@types/react-sidebar": "^3.0.0",
+    "gh-pages": "^2.0.1",
     "typescript": "^3.2.2"
-  }
+  },
+  "homepage": "http://kirim-lee.github.io/nuber-client/"
 }

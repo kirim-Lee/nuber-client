@@ -57,6 +57,7 @@ export interface getChat_GetChat_chat_messages {
   __typename: "Message";
   id: number;
   text: string;
+  chatId: number | null;
   userId: number | null;
 }
 
@@ -79,7 +80,7 @@ export interface getChat {
 }
 
 export interface getChatVariables {
-  chatId: number;
+  chatId?: number | null;
 }
 
 /* tslint:disable */
@@ -91,8 +92,10 @@ export interface getChatVariables {
 
 export interface sendMessage_SendChatMessage_message {
   __typename: "Message";
+  id: number;
   text: string;
   chatId: number | null;
+  userId: number | null;
 }
 
 export interface sendMessage_SendChatMessage {
@@ -109,6 +112,25 @@ export interface sendMessage {
 export interface sendMessageVariables {
   text: string;
   chatId: number;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL subscription operation: messageSubscription
+// ====================================================
+
+export interface messageSubscription_MessageSubscription {
+  __typename: "Message";
+  id: number;
+  text: string;
+  chatId: number | null;
+  userId: number | null;
+}
+
+export interface messageSubscription {
+  MessageSubscription: messageSubscription_MessageSubscription | null;
 }
 
 /* tslint:disable */
