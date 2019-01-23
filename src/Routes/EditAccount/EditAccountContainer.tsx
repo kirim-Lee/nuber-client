@@ -13,8 +13,12 @@ interface IState {
     firstName: string;
     lastName: string;
     email: string;
-    profilePhoto: string;
+    password: string;
+    password1: string;
+    password2: string;
+    password3: string;
     uploading: boolean;
+    profilePhoto: string;
     file?: Blob;
 }
 
@@ -28,6 +32,10 @@ class EditAccountContainer extends React.Component<IProps, IState> {
         email: '',
         firstName: '',
         lastName: '',
+        password: '',
+        password1: '',
+        password2: '',
+        password3: '',
         profilePhoto: '',
         uploading: false
     }
@@ -37,7 +45,11 @@ class EditAccountContainer extends React.Component<IProps, IState> {
             firstName,
             lastName,
             profilePhoto,
-            uploading
+            uploading,
+            password,
+            password1,
+            password2,
+            password3
         } = this.state;
         
         return (
@@ -62,6 +74,9 @@ class EditAccountContainer extends React.Component<IProps, IState> {
                             email,
                             firstName,
                             lastName,
+                            password1,
+                            password2,
+                            password3,
                             profilePhoto
                         }}
                     >
@@ -75,6 +90,11 @@ class EditAccountContainer extends React.Component<IProps, IState> {
                             loading = {false}
                             onSubmit = {updateProfileFn}
                             uploading={uploading}
+                            password = {password}
+                            password1 = {password1}
+                            password2 = {password2}
+                            password3 = {password3}
+                            
                         />
                     )}
                     </UpdateProfileMutation>
@@ -115,24 +135,28 @@ class EditAccountContainer extends React.Component<IProps, IState> {
                 email,
                 firstName,
                 lastName,
-                profilePhoto
+                profilePhoto,
+                password
             }}} = data as any;
             const {
                 email: stateEmail,
                 firstName: stateFirstName,
                 lastName: stateLastName,
-                profilePhoto: stateProfilePhoto
+                profilePhoto: stateProfilePhoto,
+                password: statePassword
             } = this.state;
 
-            if(stateEmail !== email &&
-                stateFirstName !== firstName &&
-                stateLastName !== lastName &&
-                stateProfilePhoto !== profilePhoto
+            if(stateEmail !== email ||
+                stateFirstName !== firstName ||
+                stateLastName !== lastName ||
+                stateProfilePhoto !== profilePhoto || 
+                statePassword !== password
                 ) {
                     this.setState({
                         email,
                         firstName,
                         lastName,
+                        password,
                         profilePhoto
                     } as any);
                 }           

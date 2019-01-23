@@ -27,6 +27,10 @@ interface IProps {
     onSubmit: MutationFn;
     loading: boolean;
     uploading: boolean;
+    password: string;
+    password1: string;
+    password2: string;
+    password3: string;
   }
 
   const EditAccouuntPresenter: React.SFC<IProps> = ({
@@ -37,7 +41,11 @@ interface IProps {
     onInputChange,
     onSubmit,
     loading,
-    uploading
+    uploading,
+    password,
+    password1,
+    password2,
+    password3
   }) => (
       <Container>
             <Helmet>
@@ -71,6 +79,40 @@ interface IProps {
                     name = {"email"}
                     placeholder={"Email"}
                 />
+                {!password ?
+                    <ExtendedInput
+                        onChange={onInputChange}
+                        type={"password"}
+                        value={password1}
+                        name = {"password1"}
+                        placeholder={"add your password"}
+                    /> : (
+                        <React.Fragment>
+                            <ExtendedInput 
+                                onChange = {onInputChange}
+                                type={'password'}
+                                value={password1}
+                                name={"password1"}
+                                placeholder={"prev password"}
+                            />
+                            <ExtendedInput 
+                                onChange = {onInputChange}
+                                type={'password'}
+                                value={password2}
+                                name={"password2"}
+                                placeholder={"after password"}
+                            />
+                            <ExtendedInput 
+                                onChange = {onInputChange}
+                                type={'password'}
+                                value={password3}
+                                name={"password3"}
+                                placeholder={"after password again"}
+                            />
+                        </React.Fragment>
+                    )
+                }
+                
                 <Button onClick={null} value={loading ? "Loading" : "Update"} />
             </ExtendedForm>
       </Container>

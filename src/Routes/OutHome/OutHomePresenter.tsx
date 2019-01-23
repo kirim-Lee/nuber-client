@@ -54,13 +54,13 @@ const Grey = styled.span`
   margin-left: 10px;
 `;
 
-const SocialLogin = styled.div`
+const CommonLogin = styled.div`
   border-top: 1px solid ${props => props.theme.greyColor};
   padding: 30px 20px;
   cursor: pointer;
 `;
 
-const SocialLink = styled.span`
+const CommonLink = styled.span`
   color: ${props => props.theme.blueColor};
   font-size: 20px;
 `;
@@ -87,9 +87,14 @@ const OutHomePresenter: React.SFC<IProps> = ({}) => (
             </PhoneLogin>
         </Link>
         <Link to={'/social-login'}>
-            <SocialLogin>
-                <SocialLink>Or connect with social</SocialLink>
-            </SocialLogin>
+            <CommonLogin>
+                <CommonLink>Or connect with social</CommonLink>
+            </CommonLogin>
+        </Link>
+        <Link to={'/email-login'}>
+          <CommonLogin>
+              <CommonLink>Or connect with Email</CommonLink>
+          </CommonLogin>
         </Link>
     </Footer>
 </Container>

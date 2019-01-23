@@ -13,6 +13,7 @@ export const USER_PROFILE = gql`
                 firstName
                 lastName
                 email
+                password
             }
         }
     }

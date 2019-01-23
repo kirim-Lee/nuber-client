@@ -155,6 +155,30 @@ export interface updateProfileVariables {
   lastName: string;
   email: string;
   profilePhoto?: string | null;
+  password?: string | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: emailLogin
+// ====================================================
+
+export interface emailLogin_EmailSignIn {
+  __typename: "EmailSignInResponse";
+  ok: boolean;
+  error: string | null;
+  token: string | null;
+}
+
+export interface emailLogin {
+  EmailSignIn: emailLogin_EmailSignIn;
+}
+
+export interface emailLoginVariables {
+  email: string;
+  password: string;
 }
 
 /* tslint:disable */
@@ -537,6 +561,7 @@ export interface userProfile_GetMyProfile_user {
   firstName: string;
   lastName: string;
   email: string | null;
+  password: string | null;
 }
 
 export interface userProfile_GetMyProfile {
